@@ -5,6 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PWA Install Button</title>
+    <!-- Link to the manifest file -->
+    <link rel="manifest" href="https://tiffyai.github.io/Play/manifest.json">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
@@ -55,12 +57,35 @@
                 box-shadow: 0 0 25px rgba(103, 126, 255, 1), 0 0 50px rgba(103, 126, 255, 0.8);
             }
         }
+
+        .hidden {
+            display: none;
+        }
+
+        .message-box {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0, 0, 0, 0.8);
+            padding: 1.5rem;
+            border-radius: 1rem;
+            text-align: center;
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+        }
+
+        .message-box.show {
+            opacity: 1;
+        }
     </style>
 </head>
 
 <body>
 
-    <!-- The Futuristic Glass Button -->
+    <!-- The Futuristic Glass Button, now always visible -->
     <button id="installButton" class="glass-button text-2xl font-bold py-5 px-12 rounded-full transform hover:bg-white/20 focus:outline-none focus:ring-4 focus:ring-purple-300 mb-10">
         Install
     </button>
@@ -68,17 +93,72 @@
     <!-- Audio element for the sound effect -->
     <audio id="installSound" src="https://tiffyai.github.io/App/install.wav" preload="auto"></audio>
 
+    <!-- Custom message box -->
+    <div id="messageBox" class="message-box">
+        <p id="messageText"></p>
+    </div>
+
     <script>
         const installButton = document.getElementById('installButton');
         const installSound = document.getElementById('installSound');
+        const messageBox = document.getElementById('messageBox');
+        const messageText = document.getElementById('messageText');
 
-        // Play the sound and log to the console when the button is clicked
-        installButton.addEventListener('click', () => {
-            console.log('Button clicked!');
-            installSound.currentTime = 0; // Rewind to the start
-            installSound.play().catch(error => {
+        let deferredPrompt = null;
+
+        // Function to show a message box
+        function showMessage(text) {
+            messageText.textContent = text;
+            messageBox.classList.add('show');
+            setTimeout(() => {
+                messageBox.classList.remove('show');
+            }, 3000);
+        }
+
+        // Listen for the beforeinstallprompt event, but don't hide the button
+        window.addEventListener('beforeinstallprompt', (e) => {
+            // Prevent the mini-infobar from appearing on mobile
+            e.preventDefault();
+            // Stash the event so it can be triggered later.
+            deferredPrompt = e;
+            console.log('beforeinstallprompt event fired.');
+        });
+
+        // Listen for the click event on the install button
+        installButton.addEventListener('click', async () => {
+            console.log('Install button clicked.');
+            
+            // Play the sound
+            installSound.currentTime = 0;
+            await installSound.play().catch(error => {
                 console.error("Audio playback failed:", error);
             });
+
+            // Show the install prompt if it's available
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                // Wait for the user to respond to the prompt
+                const { outcome } = await deferredPrompt.userChoice;
+                console.log(`User response to the install prompt: ${outcome}`);
+                
+                if (outcome === 'accepted') {
+                    showMessage('App installed successfully!');
+                } else {
+                    showMessage('Installation cancelled.');
+                }
+
+                // Reset the deferredPrompt variable
+                deferredPrompt = null;
+            } else {
+                showMessage('This browser does not support PWA installation.');
+            }
+        });
+
+        // Listen for appinstalled event
+        window.addEventListener('appinstalled', () => {
+            // Hide the install button
+            installButton.classList.add('hidden');
+            console.log('PWA was installed');
         });
     </script>
 </body>

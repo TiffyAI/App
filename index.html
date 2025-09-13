@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PWA Install Button</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            /* Use the provided background image */
+            background-image: url('https://tiffyai.github.io/App/APP.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+            min-height: 100vh;
+            padding: 1rem;
+            color: white;
+        }
+
+        .glass-button {
+            backdrop-filter: blur(10px);
+            background-color: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            animation: glow-pulse 2s cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite alternate;
+        }
+
+        .glass-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 60px rgba(0, 0, 0, 0.2);
+        }
+
+        .glass-button:active {
+            transform: scale(0.95);
+        }
+
+        @keyframes glow-pulse {
+            from {
+                box-shadow: 0 0 15px rgba(103, 126, 255, 0.8), 0 0 30px rgba(103, 126, 255, 0.6);
+            }
+
+            to {
+                box-shadow: 0 0 25px rgba(103, 126, 255, 1), 0 0 50px rgba(103, 126, 255, 0.8);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- The Futuristic Glass Button -->
+    <button id="installButton" class="glass-button text-2xl font-bold py-5 px-12 rounded-full transform hover:bg-white/20 focus:outline-none focus:ring-4 focus:ring-purple-300 mb-10">
+        Install
+    </button>
+
+    <!-- Audio element for the sound effect -->
+    <audio id="installSound" src="https://tiffyai.github.io/App/install.wav" preload="auto"></audio>
+
+    <script>
+        const installButton = document.getElementById('installButton');
+        const installSound = document.getElementById('installSound');
+
+        // Play the sound and log to the console when the button is clicked
+        installButton.addEventListener('click', () => {
+            console.log('Button clicked!');
+            installSound.currentTime = 0; // Rewind to the start
+            installSound.play().catch(error => {
+                console.error("Audio playback failed:", error);
+            });
+        });
+    </script>
+</body>
+
+</html>

@@ -142,7 +142,7 @@
                 console.log(`User response to the install prompt: ${outcome}`);
                 
                 if (outcome === 'accepted') {
-                    showMessage('App installed successfully!');
+                    showMessage('TiffyAI installed successfully! Just look for the TiffyAI token app, you will see it shimmering.');
                 } else {
                     showMessage('Installation cancelled.');
                 }
@@ -150,7 +150,7 @@
                 // Reset the deferredPrompt variable
                 deferredPrompt = null;
             } else {
-                showMessage('This browser does not support PWA installation.');
+                showMessage('Either you already installed me or this browser is not made for it. Copy the link and try in another browser');
             }
         });
 
@@ -158,7 +158,7 @@
         window.addEventListener('appinstalled', () => {
             // Hide the install button
             installButton.classList.add('hidden');
-            console.log('PWA was installed');
+            console.log('TiffyAI was installed');
         });
     </script>
 </body>
